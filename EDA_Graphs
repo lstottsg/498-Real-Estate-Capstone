@@ -1,0 +1,152 @@
+
+library(ggplot2)
+library(dplyr)
+
+barfill<-"blueviolet"
+barlines<-"darkmagenta"
+
+ggplot(d1, aes(DaysListToPending)) +
+         geom_histogram(aes(y= ..count..),binwidth=5, colour=barlines, fill=barfill) +
+          ggtitle("Histogram of Days From List To Pending Sale") +
+          scale_x_continuous(name= "Days", limits=c(0,365)) +
+          scale_y_continuous(name="Listing Count")+
+          theme_bw()
+
+ggplot(d1, aes(OriginalListPrice)) +
+  geom_histogram(aes(y= ..count..),binwidth=10000, colour=barlines, fill=barfill) +
+  ggtitle("Histogram of Original List Price") +
+  scale_x_continuous(name= "Original List Price", limits=c(25000,999999)) +
+  scale_y_continuous(name="Listing Count")+
+  theme_bw()
+
+ggplot(d1, aes(OriginalListPrice)) +
+  geom_histogram(aes(y= ..count..),binwidth=10000, colour=barlines, fill=barfill) +
+  ggtitle("Histogram of List Price at Sale") +
+  scale_x_continuous(name= "List Price at Sale", limits=c(25000,999999)) +
+  scale_y_continuous(name="Listing Count")+
+  theme_bw()
+
+d1_lpchange<-d1[(d1$ListPrice_delta!=0),]
+ggplot(d1_lpchange, aes(ListPrice_delta)) +
+  geom_histogram(aes(y= ..count..),binwidth=1000, colour=barlines, fill=barfill) +
+  ggtitle("Histogram of List Price Change, If Change Occurred") +
+  scale_x_continuous(name= "List Price At Sale Minus Original List Price", limits=c(-50000,50000)) +
+  scale_y_continuous(name="Listing Count")+
+  theme_bw()
+
+#boxplot(d1$DaysListToPending~d1$MonthOfList)
+
+
+
+split_month<-group_by(d1,MonthOfList) %>% summarize(m=mean(DaysListToPending))
+barplot(split_month$m, main="Average Days From List To Pending Sale \nBy Month of Original List Date", horiz=FALSE,
+        names.arg=split_month$MonthOfList, ylim=c(0,100), col=barfill, ylab="Avg Days From List To Pending", xlab="Month of Original List Date")
+
+
+split1<-group_by(d1,WaterAccess_ID) %>% summarize(m=mean(DaysListToPending))
+barplot(split1$m, main="Average Days From List To Pending Sale \nBy Water Access Indicator", horiz=FALSE,
+        names.arg=split1$WaterAccess_ID, ylim=c(0,100), col=barfill, ylab="Avg Days From List To Pending")
+
+split1<-group_by(d1,On_Lake_Michigan) %>% summarize(m=mean(DaysListToPending))
+barplot(split1$m, main="Average Days From List To Pending Sale \nBy On Lake Michigan Indicator", horiz=FALSE,
+        names.arg=split1$On_Lake_Michigan, ylim=c(0,200), col=barfill, ylab="Avg Days From List To Pending")
+
+
+split1<-group_by(d1,Finished_Basement_ID) %>% summarize(m=mean(DaysListToPending))
+barplot(split1$m, main="Average Days From List To Pending Sale \nBy Finished Basement Indicator", horiz=FALSE,
+        names.arg=split1$Finished_Basement_ID, ylim=c(0,100), col=barfill, ylab="Avg Days From List To Pending")
+
+split1<-group_by(d1,Concession_ID) %>% summarize(m=mean(DaysListToPending))
+barplot(split1$m, main="Average Days From List To Pending Sale \nBy Seller Concessions Made Indicator", horiz=FALSE,
+        names.arg=split1$Concession_ID, ylim=c(0,100), col=barfill, ylab="Avg Days From List To Pending")
+
+d1_2<-d1[(round(d1$DW_IS_HOTEL,2)!=0.06),]
+split1<-group_by(d1_2,DW_IS_HOTEL) %>% summarize(m=mean(DaysListToPending))
+barplot(split1$m, main="Average Days From List To Pending Sale \nBy Hotels In The Area", horiz=FALSE,
+        names.arg=split1$DW_IS_HOTEL, ylim=c(0,100), col=barfill, ylab="Avg Days From List To Pending")
+
+d1_2<-d1[(round(d1$DW_IS_RESTAURANT,2)!=2.28),]
+split1<-group_by(d1_2,DW_IS_RESTAURANT) %>% summarize(m=mean(DaysListToPending))
+barplot(split1$m, main="Average Days From List To Pending Sale \nBy Restaurants In The Area", horiz=FALSE,
+        names.arg=split1$DW_IS_RESTAURANT, ylim=c(0,100), col=barfill, ylab="Avg Days From List To Pending", xlab="Restaurant Count")
+
+d1_2<-d1
+d1_2$MarketHealth<-round(d1_2$MarketHealthIndex,0)
+split1<-group_by(d1_2,MarketHealth) %>% summarize(m=mean(DaysListToPending))
+barplot(split1$m, main="Average Days From List To Pending Sale \nBy Rounded Zillow Zip Code Market Health Index", horiz=FALSE,
+        names.arg=split1$MarketHealth, ylim=c(0,120), col=barfill, ylab="Avg Days From List To Pending", xlab="Rounded Zillow Zip Code Market Health Index")
+
+
+
+
+split1<-group_by(d1,Condo_ID) %>% summarize(m=mean(DaysListToPending))
+barplot(split1$m, main="Average Days From List To Pending Sale \nBy Condo Indicator", horiz=FALSE,
+        names.arg=split1$Condo_ID, ylim=c(0,100), col=barfill, ylab="Avg Days From List To Pending")
+
+split1<-group_by(d1,Multi_Fam_ID) %>% summarize(m=mean(DaysListToPending))
+barplot(split1$m, main="Average Days From List To Pending Sale \nBy Multi-Family Home Indicator", horiz=FALSE,
+        names.arg=split1$Multi_Fam_ID, ylim=c(0,100), col=barfill, ylab="Avg Days From List To Pending")
+
+split1<-group_by(d1,Garage_ID) %>% summarize(m=mean(DaysListToPending))
+barplot(split1$m, main="Average Days From List To Pending Sale \nBy Garage Indicator", horiz=FALSE,
+        names.arg=split1$Garage_ID, ylim=c(0,100), col=barfill, ylab="Avg Days From List To Pending")
+
+split1<-group_by(d1,HighAcreage_ID) %>% summarize(m=mean(DaysListToPending))
+barplot(split1$m, main="Average Days From List To Pending Sale \nBy High Acreage Property Indicator", horiz=FALSE,
+        names.arg=split1$HighAcreage_ID, ylim=c(0,100), col=barfill, ylab="Avg Days From List To Pending")
+
+d1_2<-d1[(round(d1$DW_IS_COLLEGE,3)!=0.001),]
+split1<-group_by(d1_2,DW_IS_COLLEGE) %>% summarize(m=mean(DaysListToPending))
+barplot(split1$m, main="Average Days From List To Pending Sale \nBy College Campus Area Indicator", horiz=FALSE,
+        names.arg=split1$DW_IS_COLLEGE, ylim=c(0,100), col=barfill, ylab="Avg Days From List To Pending")
+
+
+split1<-group_by(d1,Foreclosure_ID) %>% summarize(m=mean(DaysListToPending))
+barplot(split1$m, main="Average Days From List To Pending Sale \nBy Foreclosure Listing Indicator", horiz=FALSE,
+        names.arg=split1$Foreclosure_ID, ylim=c(0,100), col=barfill, ylab="Avg Days From List To Pending")
+
+
+
+
+
+#Unused Graphs
+
+split1<-group_by(d1,GP_Schools) %>% summarize(m=mean(DaysListToPending))
+barplot(split1$m, main="Average Days From List To Pending Sale \nBy Month of Original List Date", horiz=FALSE,
+        names.arg=split1$GP_Schools, ylim=c(0,100), col=barfill)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
