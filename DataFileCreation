@@ -169,3 +169,59 @@ write.csv(d1, file="MLS_Summary.csv")
 write.csv(d1.mod, file="MLS_Modeling.csv")
 write.csv(train, file="MLS_Train.csv")
 write.csv(test, file="MLS_Test.csv")
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# CORRELATION Plots
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#Corrplot: Correlation Heatmap
+num_var_names <- names(d1)[sapply(d1, is.numeric)]
+num_vars <- as.matrix(d1 %>% select(one_of(num_var_names)))
+
+#need to split up the data - can't have this many numeric in one corrplot
+
+#1-29 are MLS
+#30-65 are census
+#66-67 are Market Health and response
+
+mls_num_vars <- num_vars[,c(1:29,66:67)]
+census_num_vars <- num_vars[,c(30:53,55:67)]
+
+col3 <- colorRampPalette(c("red", "white", "blue")) 
+
+#run for mls
+pdf(file = "fig_cor_heat_map_mls.pdf", 
+    width = 8, height = 7.5, paper = "letter")
+M1 <- cor(mls_num_vars,use = "na.or.complete")
+corrplot(abs(M1), method="circle", tl.col ="black", col=col3(200), cl.lim=c(0,1))
+title("MLS Correlations", line = +3)
+dev.off()
+
+
+
+#set up data for census corr   
+cormat.census <- cor(census_num_vars)
+
+#Clean up census names a bit
+short_census_names <- c("pop_density" ,              "hh_density" ,               "vacant"                   
+                        ,"value_h_unit_oo_medn" ,      "h_unit_age"    ,             "pct_pop_growth"   ,         "pct_hh_growth"            
+                        ,"biz_large_employer" ,     "biz_dept_store"   ,       "biz_grocery"   ,          "biz_gas_food"           
+                        ,"biz_conv_store"   ,       "biz_gas"    ,             "biz_qsr_pizza_chain"   ,  "biz_qsr_pizza_nonchain"
+                        ,"biz_qsr_nonpizza"  ,      "biz_qsr_big10"  ,         "biz_other_pizza"  ,       "biz_other_eating"       
+                        ,"biz_hotel"      ,         "biz_video"    ,           "biz_hospital"  ,          "biz_school"             
+                        ,"biz_college"   ,          "biz_eating_chain_50pl" ,  "biz_bagels_donuts_pl"   
+                        ,"biz_icecream"  ,          "biz_restaurant"   ,       "biz_pizza"  ,             "biz_coffee"             
+                        ,"biz_bar_club"  ,          "biz_retail"  ,            "biz_active"  ,            "employee_total"           
+                        ,"employee_here"   ,          "MarketHealthIndex"  ,       "DaysListToPending" )
+rownames(cormat.census) <- short_census_names
+colnames(cormat.census) <- short_census_names
+
+#run for census
+pdf(file = "fig_cor_heat_map_census.pdf", 
+    width = 8, height = 7.5, paper = "letter")
+M2 <- cor(census_num_vars,use = "na.or.complete")
+corrplot(abs(cormat.census), method="circle", tl.col ="black", col=col3(200), cl.lim=c(0,1))
+title("Census Correlations", line = +3, outer=T)
+dev.off()
+
+
