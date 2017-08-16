@@ -109,13 +109,20 @@ barplot(split1$m, main="Average Days From List To Pending Sale \nBy Foreclosure 
 
 
 
-#Unused Graphs
-
+#Unused Graph
 split1<-group_by(d1,GP_Schools) %>% summarize(m=mean(DaysListToPending))
 barplot(split1$m, main="Average Days From List To Pending Sale \nBy Month of Original List Date", horiz=FALSE,
         names.arg=split1$GP_Schools, ylim=c(0,100), col=barfill)
 
+attach(d1)
+plot(DaysListToPending,OriginalListPrice, xlab="Days From List to Pending Sale", ylab="Original List Price", 
+     main="Original List Price Outliers")
 
+mean(d1$OriginalListPrice)
+
+attach(mls)
+plot(TotalFinishedSF,YearBuilt, xlab="Total Square Footage", ylab="Year Built", 
+     main="Bad Data Outliers")
 
 
 
